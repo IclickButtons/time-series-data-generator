@@ -2,10 +2,10 @@ import numpy as np
 import operator 
 
 class DataGeneratorTimeSeries(object): 
-    '''TODO:implement output format, implement multidimensionality, last batch
+    '''TODO:implement output format, last batch
     different length'''
     def __init__(self, data, num_time_steps, num_pred, batch_size, 
-                 shuffle=False, variable_batch_size=False): 
+                 output_shape = 'BSD', shuffle=False, variable_batch_size=False): 
         
         self._data = data 
         self.num_time_steps = num_time_steps 
@@ -25,6 +25,19 @@ class DataGeneratorTimeSeries(object):
         self._cursor_list = list(range(0, self._segments + 2)) 
         self._cursor_pos = None 
 
+        self.output_shape = output_shape 
+    
+    output_shape = property(operator.attrgetter('_output_shape')) 
+
+    @output_shape.setter 
+    def output_shape(self, os): 
+        if os == 'BSD': 
+            self._output_shape = 1 
+        elif os == 'SBD': 
+            self._output_shape = 2 
+        else: 
+            raise Exception('unknown keyword argument for output_shape') 
+    
     batch_size = property(operator.attrgetter('_batch_size')) 
         
     @batch_size.setter 
@@ -47,7 +60,7 @@ class DataGeneratorTimeSeries(object):
     def num_pred(self, np): 
         if not (np > 0): 
             raise Exception('length of prediction sequence has to greater than zero')
-        
+    
     def _next_sequence(self): 
         '''Creates training sequences (x) of length num_time_steps and
         groundtruth predictions (y) of length num_pred. In this 
@@ -79,6 +92,15 @@ class DataGeneratorTimeSeries(object):
         self._cursor_list.remove(self._cursor_pos) 
 
         return seq_x, seq_y 
+    
+    def convert_output_format(self, batch): 
+        array = np.asarray(batch) 
+        if self._output_shape == 1: 
+            array = array.reshape(-1, self._num_time_steps, self._data_dim) 
+        elif self._output_shape == 2: 
+            array = array.reshape(self._num_time_steps, -1, self._data_dim) 
+
+        return array 
 
     def create_batches(self): 
         '''creates batches of training sequences and groundtruth predictions of
@@ -103,12 +125,12 @@ class DataGeneratorTimeSeries(object):
                 batch_y.append(y) 
 
         # convert batches to correct output format 
-        batch_x = np.asarray(batch_x) 
-        batch_x = batch_x.reshape(-1, self._num_time_steps, self._data_dim) 
+        batch_x = self.convert_output_format(batch_x)  
         batch_y = np.asarray(batch_y) 
         batch_y = batch_y.reshape(-1, 1)
 
         return batch_x, batch_y 
+    
 
     def reset_gen(self): 
         '''resets the generator by transforming the cursor list to its 
