@@ -1,19 +1,28 @@
 from unittest import TestCase
 from data_generator import DataGeneratorTimeSeries
+from parameterized import parameterized, parameterized_class
 import numpy as np 
 import pandas as pd 
 
+@parameterized_class(('seq_length', 'pred_length', 'batch_size',
+    'output_shape'), [
+        (5, 1, 15, 'BSD'), 
+        (2, 1, 1, 'BSD'), 
+        (5, 1, 15, 'SBD') 
+        ])
+
 class DataGeneratorTimeSeriesTest(TestCase): 
     
-    def setUp(self):
+    def setUp(self):   
         # create sample data frame and values 
         dim = 1
         data_array = np.array([np.arange(0,50) for i in
             range(dim)]).reshape(50,dim) 
         self._test_df = pd.DataFrame(data_array, columns=list('A'))
         self._test_data = self._test_df.values 
-        self._generator = DataGeneratorTimeSeries(self._test_data, 5, 1, 15,
-                                                  output_shape = 'BSD')  
+        self._generator = DataGeneratorTimeSeries(self._test_data, self.seq_length,
+                self.pred_length, self.batch_size, self.output_shape)  
+
     
     def test_correct_y_batches(self): 
         i = 0 

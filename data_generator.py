@@ -2,17 +2,17 @@ import numpy as np
 import operator 
 
 class DataGeneratorTimeSeries(object): 
-    '''TODO:implement output format, last batch
-    different length'''
+    '''TODO:implement output format,
+    '''
     def __init__(self, data, num_time_steps, num_pred, batch_size, 
-                 output_shape = 'BSD', shuffle=False, variable_batch_size=False): 
+                 output_shape = 'BSD', shuffle=False, last_batch_dif=False): 
         
         self._data = data 
         self.num_time_steps = num_time_steps 
         self._num_pred = num_pred
         self.batch_size = batch_size
         self._shuffle = shuffle 
-        self._variable_batch_size = variable_batch_size 
+        self._last_batch_dif = last_batch_dif
 
         self._data_dim = self._data.shape[1]
         self._data_length = len(self._data) 
@@ -142,5 +142,9 @@ class DataGeneratorTimeSeries(object):
         self._cursor_pos = None 
 
     def yield_batches(self): 
-        if (len(self._cursor_list) >= self._batch_size): 
-            return True 
+        if self._last_batch_dif==False: 
+            if (len(self._cursor_list) >= self._batch_size): 
+                return True 
+        if self._last_batch_dif==True: 
+            if (len(self._cursor_list) >= 0): 
+                return True 
