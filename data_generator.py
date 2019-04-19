@@ -2,7 +2,7 @@ import numpy as np
 import operator 
 
 class DataGeneratorTimeSeries(object): 
-    '''TODO:implement output format,
+    '''
     '''
     def __init__(self, data, num_time_steps, num_pred, batch_size, 
                  output_shape = 'BSD', shuffle=False, last_batch_dif=False): 
