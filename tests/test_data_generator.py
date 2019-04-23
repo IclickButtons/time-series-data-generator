@@ -1,5 +1,5 @@
 from unittest import TestCase
-from data_generator import DataGeneratorTimeSeries
+from lib.data_generator import DataGeneratorTimeSeries
 from parameterized import parameterized, parameterized_class
 import numpy as np 
 import pandas as pd 
