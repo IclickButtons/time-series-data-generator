@@ -26,7 +26,6 @@ class DataGeneratorTimeSeriesTest(TestCase):
                                                   self.batch_size, 
                                                   self.output_shape)  
 
-    
     def test_correct_y_batches(self): 
         i = 0 
         while self._generator.yield_batches(): 
