@@ -3,11 +3,13 @@ import operator
 
 class DataGeneratorTimeSeries(object): 
     '''
+    Args: 
+        
     '''
-    def __init__(self, data, num_time_steps, num_pred, batch_size, 
+    def __init__(self, num_time_steps, num_pred, batch_size, data_dir = None, 
                  output_shape = 'BSD', shuffle=False, last_batch_dif=False): 
         
-        self._data = data 
+        self._data_dir = data_dir 
         self.num_time_steps = num_time_steps 
         self._num_pred = num_pred
         self.batch_size = batch_size
@@ -26,6 +28,9 @@ class DataGeneratorTimeSeries(object):
         self._cursor_pos = None 
 
         self.output_shape = output_shape 
+    
+    
+    
     
     output_shape = property(operator.attrgetter('_output_shape')) 
 
