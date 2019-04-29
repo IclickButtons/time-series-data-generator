@@ -3,13 +3,17 @@ from lib.data_generator import DataGeneratorTimeSeries
 from parameterized import parameterized, parameterized_class
 import numpy as np 
 import pandas as pd 
+import os 
 
-@parameterized_class(('seq_length', 'pred_length', 'batch_size',
+dir_path = os.path.dirname(os.path.realpath(__file__))
+test_data_fp = dir_path + '/bla.csv' 
+
+@parameterized_class(('seq_length', 'pred_length', 'batch_size', 'data_dir', 
     'output_shape'), [
-        (5, 1, 15, 'BSD'), 
-        (2, 1, 1, 'BSD'), 
-        (5, 1, 15, 'SBD'), 
-        (12,1, 6, 'SBD') 
+        (5, 1, 15, test_data_fp, 'BSD'), 
+        (2, 1, 1, test_data_fp, 'BSD'), 
+        (5, 1, 15, test_data_fp, 'SBD'), 
+        (12,1, 6, test_data_fp, 'SBD') 
         ])
 class DataGeneratorTimeSeriesTest(TestCase): 
     
@@ -19,11 +23,13 @@ class DataGeneratorTimeSeriesTest(TestCase):
         data_array = np.array([np.arange(0,50) for i in
             range(self._dim)]).reshape(50,self._dim) 
         self._test_df = pd.DataFrame(data_array, columns=list('A'))
-        self._test_data = self._test_df.values 
-        self._generator = DataGeneratorTimeSeries(self._test_data, 
-                                                  self.seq_length,
+        self._test_df.to_csv(dir_path + '/bla.csv', index=False) 
+        self._test_data = self._test_df.values
+        #print(self._test_data) 
+        self._generator = DataGeneratorTimeSeries(self.seq_length,
                                                   self.pred_length, 
                                                   self.batch_size, 
+                                                  self.data_dir, 
                                                   self.output_shape)  
 
     def test_correct_y_batches(self): 

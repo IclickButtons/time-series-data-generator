@@ -1,4 +1,5 @@
 import numpy as np 
+import pandas as pd 
 import operator 
 
 class DataGeneratorTimeSeries(object): 
@@ -6,16 +7,16 @@ class DataGeneratorTimeSeries(object):
     Args: 
         
     '''
-    def __init__(self, num_time_steps, num_pred, batch_size, data_dir = None, 
+    def __init__(self, num_time_steps, num_pred, batch_size, data_dir,   
                  output_shape = 'BSD', shuffle=False, last_batch_dif=False): 
         
-        self._data_dir = data_dir 
+        self.data_dir = data_dir 
         self.num_time_steps = num_time_steps 
         self._num_pred = num_pred
         self.batch_size = batch_size
         self._shuffle = shuffle 
         self._last_batch_dif = last_batch_dif
-
+        self._data = self._load_data()  
         self._data_dim = self._data.shape[1]
         self._data_length = len(self._data) 
 	
@@ -29,7 +30,14 @@ class DataGeneratorTimeSeries(object):
 
         self.output_shape = output_shape 
     
-    
+    data_dir = property(operator.attrgetter('_data_dir')) 
+
+    @data_dir.setter 
+    def data_dir(self, dd): 
+        if not dd: 
+            raise Exception('no data directory was specified') 
+        else: 
+            self._data_dir = dd
     
     
     output_shape = property(operator.attrgetter('_output_shape')) 
@@ -65,6 +73,12 @@ class DataGeneratorTimeSeries(object):
     def num_pred(self, np): 
         if not (np > 0): 
             raise Exception('length of prediction sequence has to greater than zero')
+
+    def _load_data(self): 
+        #data = np.genfromtxt(self._data_dir, delimiter=',', skip_header=1)     
+        data = pd.read_csv(self._data_dir)
+        data = data.values 
+        return data 
     
     def _next_sequence(self): 
         '''Creates training sequences (x) of length num_time_steps and
