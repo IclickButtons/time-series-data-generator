@@ -148,7 +148,7 @@ class DataGeneratorTimeSeries(object):
         batch_y = np.asarray(batch_y) 
         batch_y = batch_y.reshape(-1, 1)
 
-        return batch_x, batch_y 
+        return {'x_train': batch_x, 'y_train':  batch_y} 
     
 
     def reset_gen(self): 
